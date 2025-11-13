@@ -1,0 +1,4 @@
+/node_modules
+.env
+tempdata.json
+planning.txt
