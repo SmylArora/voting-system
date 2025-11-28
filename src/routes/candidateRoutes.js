@@ -29,24 +29,24 @@ router.post('/newcandidate', jwtAuthMiddleware, async (req, res) => {
 
     } catch (error) {
         console.log(error, "error");
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
 
     }
 });
 
-router.put('./:candidateId', async (req, resp) => {
+router.put('/:candidateId', async (req, resp) => {
     try {
         if (!checkAdminRoles(req?.user?.id)) {
             return resp.status(403).json({ message: "User is not admin" })
         }
         const candidateId = req.params.candidateId;
         const candidateData = req.body;
-        const response = await User.findByIdAndUpdate(candidateId, candidateData, {
+        const response = await Candidate.findByIdAndUpdate(candidateId, candidateData, {
             new: true,
             runValidators: true,
         });
         if (!response) {
-            resp.status(404).json({ error: "Candidate Not Found" });
+            resp.status(404).json({ message: "Candidate Not Found" });
         }
         resp.status(200).json(response);
     }
@@ -58,7 +58,7 @@ router.put('./:candidateId', async (req, resp) => {
     }
 })
 
-router.delete('./:candidateId', async (req, resp) => {
+router.delete('/:candidateId', async (req, resp) => {
     try {
         if (!checkAdminRoles(req?.user?.id)) {
             return resp.status(404).json({ message: "User is not admin" })
@@ -66,7 +66,7 @@ router.delete('./:candidateId', async (req, resp) => {
         const candidateId = req.params.candidateId;
         const response = await Candidate.findByIdAndDelete(candidateId);
         if (!response) {
-            resp.status(404).json({ error: "Candidate Not Found" });
+            resp.status(404).json({ message: "Candidate Not Found" });
         }
         resp.status(200).json(response);
     }
@@ -112,7 +112,7 @@ router.post("/vote/:candidateId", jwtAuthMiddleware, async (req, resp) => {
 
     } catch (error) {
         console.log(err);
-        resp.status(500).json({ error: "Internal Server error" });
+        resp.status(500).json({ message: "Internal Server error" });
     }
 
 });

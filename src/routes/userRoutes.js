@@ -6,10 +6,16 @@ const { jwtAuthMiddleware, genrateToken } = require('./../../jwt');
 router.post('/signup', async (req, res) => {
     try {
         const data = req.body;
+         const existingAadhaar = await User.findOne({ addharNumber: data.addharNumber });
+        if (existingAadhaar) {
+            return res.status(400).json({
+                message: "Aadhaar number already registered"
+            });
+        }
         if (data.role === "admin") {
             const existingAdmin = await User.findOne({ role: "admin" });
             if (existingAdmin) {
-                return res.status(400).json({ error: "Admin already exits . only one admin  is allowed " });
+                return res.status(400).json({ message: "Admin already exits . only one admin  is allowed " });
             }
 
         }
@@ -25,7 +31,7 @@ router.post('/signup', async (req, res) => {
 
     } catch (error) {
         console.log(error, "error");
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
 
     }
 });
@@ -38,7 +44,7 @@ router.post('/login', async (req, resp) => {
         const user = await User.findOne({ addharNumber: addharNumber });
         // if the user does not exist  or password doesnot match , return error
         if (!user || !(await user.comparePassword(password))) {
-            return resp.status(401).json({ error: "Invalid username or password" });
+            return resp.status(401).json({ message: "Invalid username or password" });
         }
 
         //genrate token 
@@ -50,7 +56,7 @@ router.post('/login', async (req, resp) => {
         // instead of passing only  username i can pass  both id and username for token gerration together as a  payload 
 
         const token = genrateToken(payload);
-        resp.json({ token });
+        resp.json({ token : token , user : user});
 
 
     } catch (error) {
